@@ -1,5 +1,4 @@
 # cs474-final-project
-Group Members: 
 
 **Group Members:**
     Midhun Sadanand
