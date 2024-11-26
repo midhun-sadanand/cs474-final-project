@@ -1,5 +1,5 @@
 # cs474-final-project
-Group Members:
+Group Members: 
 
     Midhun Sadanand
     Raymond Hou
@@ -8,7 +8,7 @@ Group Members:
 How to Run the Test Script
 
     1. run "make" in terminal
-    2. Usage: ./FinalProj [connectfour|nim|dotsandboxes]
+    2. Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random]
 
 Brief Description of Final Project
 
@@ -19,6 +19,7 @@ Brief Description of Final Project
 What Our Code Does
 
 
+
 Research Question
 
     How much more efficient does alpha-beta pruning make the minimax algorithm when calculating 
@@ -27,7 +28,7 @@ Research Question
         3-pile Nim
         Dots and Boxes
 
-Results
+Results (for initial state)
 
     Connect Four:   AB pruning improves Minimax algorithm by above 60% in node and time reduction
     3-row Nim:      AB pruning improves Minimax algorithm by above 95% in node and time reduction

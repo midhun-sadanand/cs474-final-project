@@ -8,7 +8,7 @@ Group Members:
 
 How to Run the Test Script
     1. run "make" in terminal
-    2. Usage: ./FinalProj [connectfour|nim|dotsandboxes]
+    2. Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random]
 
 Brief Description of Final Project
     Our final project compares the performance of a minimax algorithm with and without alpha-beta 
@@ -25,7 +25,7 @@ Research Question
         3-pile Nim
         Dots and Boxes
 
-Results
+Results (for initial states)
     Connect Four:   AB pruning improves Minimax algorithm by above 60% in node and time reduction
     3-row Nim:      AB pruning improves Minimax algorithm by above 95% in node and time reduction
     Dots and Boxes: AB pruning improves Minimax algorithm by above 95% in node and time reduction
@@ -40,23 +40,42 @@ from minimax import minimax
 from alphabeta import alphabeta
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: ./FinalProj [connectfour|nim|dotsandboxes]")
+    if len(sys.argv) < 3:
+        print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random]")
         sys.exit(1)
 
     game_choice = sys.argv[1].lower().replace('_', '')
+    state = sys.argv[2]
 
     if game_choice == 'connectfour':
-        game = ConnectFour()
+        if(state == 'initial'):
+            game = ConnectFour(True)
+        elif (state == 'random'):
+            game = ConnectFour(False)
+        else:
+            print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random]")
+            sys.exit(1)
         MAX_DEPTH = 4
     elif game_choice == 'nim':
-        game = Nim()
+        if(state == 'initial'):
+            game = Nim(True)
+        elif (state == 'random'):
+            game = Nim(False)
+        else:
+            print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random]")
+            sys.exit(1)
         MAX_DEPTH = 10
     elif game_choice == 'dotsandboxes':
-        game = DotsAndBoxes()
+        if(state == 'initial'):
+            game = DotsAndBoxes(True)
+        elif (state == 'random'):
+            game = DotsAndBoxes(False)
+        else:
+            print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random]")
+            sys.exit(1)
         MAX_DEPTH = 3
     else:
-        print("Invalid game choice.")
+        print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random]")
         sys.exit(1)
 
     game.display_board()

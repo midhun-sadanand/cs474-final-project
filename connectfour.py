@@ -1,5 +1,7 @@
 # connectfour.py
 
+import random
+
 # Constants representing players and empty cells
 EMPTY = 0
 PLAYER1 = 1  # AI (Maximizing Player)
@@ -12,11 +14,52 @@ SYMBOLS = {
     PLAYER2: 'O'
 }
 
+rows = 4
+cols = 4
+
 class ConnectFour:
-    def __init__(self, rows=4, cols=4):
+    def __init__(self, initial_state):
         self.rows = rows
         self.cols = cols
-        self.board = [[EMPTY for _ in range(cols)] for _ in range(rows)]
+        self.initial = initial_state
+        self.board = self.initialize_board()
+
+    def verify_board(self, board):
+        player1_count = 0
+        player2_count = 0
+
+        # Count the number of pieces for each player
+        for row in board:
+            for cell in row:
+                if cell == PLAYER1:
+                    player1_count += 1
+                elif cell == PLAYER2:
+                    player2_count += 1
+
+        # Check if the counts are valid
+        if player1_count - player2_count != 1:
+            return False  # Invalid board state
+
+        # Check for floating pieces
+        for col in range(4):
+            empty_found = False
+            for row in range(4):
+                if board[3-row][3-col] == EMPTY:
+                    empty_found = True
+                elif empty_found:
+                    return False  # Invalid board: floating piece found
+
+        return True
+
+
+    def initialize_board(self):
+        if self.initial is True:
+            return [[EMPTY for _ in range(self.cols)] for _ in range(self.rows)]
+        else:
+            board = [[random.choice([EMPTY, PLAYER1, PLAYER2]) for _ in range(self.cols)] for _ in range(self.rows)]
+            while self.verify_board(board) is False:
+                board = [[random.choice([EMPTY, PLAYER1, PLAYER2]) for _ in range(self.cols)] for _ in range(self.rows)]
+            return board
 
     def display_board(self):
         print("\nCurrent Board:")
