@@ -1,9 +1,9 @@
-import time
+# connectfour.py
 
 # Constants representing players and empty cells
 EMPTY = 0
-PLAYER1 = 1  # AI
-PLAYER2 = -1  # Opponent
+PLAYER1 = 1  # AI (Maximizing Player)
+PLAYER2 = -1  # Opponent (Minimizing Player)
 
 # Symbols for visual representation
 SYMBOLS = {
@@ -74,3 +74,11 @@ class ConnectFour:
 
     def is_terminal_node(self):
         return self.check_win(PLAYER1) or self.check_win(PLAYER2) or self.is_full()
+
+    def get_winner(self, maximizing_player):
+        if self.check_win(PLAYER1):
+            return True if maximizing_player else False
+        elif self.check_win(PLAYER2):
+            return False if maximizing_player else True
+        else:
+            return None  # Draw or game not over

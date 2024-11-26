@@ -1,24 +1,38 @@
 # heuristic.py
 
-from connectfour import EMPTY, PLAYER1, PLAYER2
+from connectfour import ConnectFour, PLAYER1, PLAYER2, EMPTY
+from nim import Nim
+from dotsandboxes import DotsAndBoxes
 
-def evaluate_window(window, player):
-    score = 0
-    opp_player = PLAYER2 if player == PLAYER1 else PLAYER1
+def evaluate(game, maximizing_player):
+    if isinstance(game, Nim):
+        return evaluate_nim(game, maximizing_player)
+    elif isinstance(game, DotsAndBoxes):
+        return evaluate_dots_and_boxes(game, maximizing_player)
+    elif isinstance(game, ConnectFour):
+        player = PLAYER1 if maximizing_player else PLAYER2
+        return evaluate_connect_four(game, player)
+    else:
+        return 0  # Default heuristic
 
-    if window.count(player) == 4:
-        score += 100
-    elif window.count(player) == 3 and window.count(EMPTY) == 1:
-        score += 5
-    elif window.count(player) == 2 and window.count(EMPTY) == 2:
-        score += 2
+def evaluate_nim(game, maximizing_player):
+    # Nimber (Grundy number) for Nim game
+    nimber = 0
+    for heap in game.heaps:
+        nimber ^= heap
+    if nimber == 0:
+        return float('-inf') if maximizing_player else float('inf')
+    else:
+        return float('inf') if maximizing_player else float('-inf')
 
-    if window.count(opp_player) == 3 and window.count(EMPTY) == 1:
-        score -= 4
+def evaluate_dots_and_boxes(game, maximizing_player):
+    # Simple heuristic: difference in box counts
+    player1_score = sum(row.count(1) for row in game.boxes)
+    player2_score = sum(row.count(-1) for row in game.boxes)
+    return (player1_score - player2_score) if maximizing_player else (player2_score - player1_score)
 
-    return score
-
-def score_position(game, player):
+def evaluate_connect_four(game, player):
+    # Heuristic function for Connect Four
     score = 0
 
     # Center column preference
@@ -51,5 +65,21 @@ def score_position(game, player):
         for col in range(game.cols - 3):
             window = [game.board[row - i][col + i] for i in range(4)]
             score += evaluate_window(window, player)
+
+    return score
+
+def evaluate_window(window, player):
+    score = 0
+    opp_player = PLAYER2 if player == PLAYER1 else PLAYER1
+
+    if window.count(player) == 4:
+        score += 100
+    elif window.count(player) == 3 and window.count(EMPTY) == 1:
+        score += 5
+    elif window.count(player) == 2 and window.count(EMPTY) == 2:
+        score += 2
+
+    if window.count(opp_player) == 3 and window.count(EMPTY) == 1:
+        score -= 4
 
     return score
