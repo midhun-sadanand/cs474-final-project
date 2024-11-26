@@ -4,4 +4,4 @@ FinalProj:
 	chmod u+x FinalProj
 	
 clean:
-	rm -f Blotto
+	rm -f FinalProj

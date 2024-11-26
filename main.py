@@ -10,7 +10,7 @@ from alphabeta import alphabeta
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python main.py [connectfour|nim|dotsandboxes]")
+        print("Usage: ./FinalProj [connectfour|nim|dotsandboxes]")
         sys.exit(1)
 
     game_choice = sys.argv[1].lower().replace('_', '')
