@@ -1,6 +1,7 @@
 # cs474-final-project
 
 **Group Members:**
+
     Midhun Sadanand
     Raymond Hou
     Daniel Liu
