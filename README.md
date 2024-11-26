@@ -5,6 +5,14 @@ Group Members:
     Raymond Hou
     Daniel Liu
 
+Research Question
+
+    How much more efficient does alpha-beta pruning make the minimax algorithm when calculating 
+    the best move for the following 3 games?
+        Connect Four
+        3-pile Nim
+        Dots and Boxes
+
 How to Run the Test Script
 
     1. run "make" in terminal
@@ -18,14 +26,6 @@ Brief Description of Final Project
 
 What Our Code Does
 
-
-Research Question
-
-    How much more efficient does alpha-beta pruning make the minimax algorithm when calculating 
-    the best move for the following 3 games?
-        Connect Four
-        3-pile Nim
-        Dots and Boxes
 
 Results
 
