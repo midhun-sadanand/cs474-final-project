@@ -1,7 +1,11 @@
 # dotsandboxes.py
 
+import random
+
 class DotsAndBoxes:
-    def __init__(self, size=3):
+    def __init__(self, initial_state, size=3):
+        self.initial = initial_state 
+        # TODO: implement a way to randomize dots and boxes
         self.size = size  # Number of boxes per row/column
         self.h_lines = [[False] * (size) for _ in range(size + 1)]  # Horizontal lines
         self.v_lines = [[False] * (size + 1) for _ in range(size)]  # Vertical lines

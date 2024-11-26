@@ -1,8 +1,17 @@
 # nim.py
 
+import random
+
 class Nim:
-    def __init__(self, heaps=[3, 5, 7]):
-        self.heaps = heaps.copy()
+    def __init__(self, initial_state, heaps=[3, 5, 7]):
+        self.initial = initial_state
+        self.heaps = self.init_heaps(heaps)
+        
+    def init_heaps(self, heaps):
+        if self.initial is True:
+            return heaps.copy()
+        else:
+            return [random.randint(1, 7), random.randint(1, 7), random.randint(1, 7)]
 
     def display_board(self):
         print("\nCurrent Heaps:")
