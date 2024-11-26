@@ -68,12 +68,13 @@ def main():
     elif game_choice == 'dotsandboxes':
         if(state == 'initial'):
             game = DotsAndBoxes(True)
+            MAX_DEPTH = 3
         elif (state == 'random'):
             game = DotsAndBoxes(False)
+            MAX_DEPTH = 10
         else:
             print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random]")
             sys.exit(1)
-        MAX_DEPTH = 3
     else:
         print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random]")
         sys.exit(1)
