@@ -27,18 +27,14 @@ def alphabeta(game, depth, alpha, beta, maximizingPlayer, node_counter):
     if maximizingPlayer:
         value = float('-inf')
         best_move = None
-        for move in valid_moves:
-            if hasattr(game, 'set_current_player'):
-                # maximizing player
-                game.set_current_player(1)  
+        for move in valid_moves:  
             if isinstance(game, ConnectFour):
                 game.make_move(move, PLAYER1)
             elif isinstance(game, Nim):
                 heap_index, remove_count = move
                 game.make_move(heap_index, remove_count)
             elif isinstance(game, DotsAndBoxes):
-                game.make_move(move)
-            else:
+                game.set_current_player(1)
                 game.make_move(move)
             new_score = alphabeta(game, depth - 1, alpha, beta, False, node_counter)[1]
             if isinstance(game, ConnectFour):
@@ -47,32 +43,31 @@ def alphabeta(game, depth, alpha, beta, maximizingPlayer, node_counter):
                 heap_index, remove_count = move
                 game.undo_move(heap_index, remove_count)
             elif isinstance(game, DotsAndBoxes):
+                game.set_current_player(1)
                 game.undo_move(move)
-            else:
-                game.undo_move(move)
+
             if new_score > value:
                 value = new_score
                 best_move = move
-            alpha = max(alpha, value)
+
             # beta cutoff
+            alpha = max(alpha, value)
             if alpha >= beta:
                 break
+
         return best_move, value
     # greedy minimize
     else:
         value = float('inf')
         best_move = None
-        for move in valid_moves:
-            if hasattr(game, 'set_current_player'):
-                game.set_current_player(-1)  
+        for move in valid_moves:  
             if isinstance(game, ConnectFour):
                 game.make_move(move, PLAYER2)
             elif isinstance(game, Nim):
                 heap_index, remove_count = move
                 game.make_move(heap_index, remove_count)
             elif isinstance(game, DotsAndBoxes):
-                game.make_move(move)
-            else:
+                game.set_current_player(-1)
                 game.make_move(move)
             new_score = alphabeta(game, depth - 1, alpha, beta, True, node_counter)[1]
             if isinstance(game, ConnectFour):
@@ -81,14 +76,16 @@ def alphabeta(game, depth, alpha, beta, maximizingPlayer, node_counter):
                 heap_index, remove_count = move
                 game.undo_move(heap_index, remove_count)
             elif isinstance(game, DotsAndBoxes):
+                game.set_current_player(-1)
                 game.undo_move(move)
-            else:
-                game.undo_move(move)
+
             if new_score < value:
                 value = new_score
                 best_move = move
-            beta = min(beta, value)
+
             # beta cutoff
+            beta = min(beta, value)
             if alpha >= beta:
                 break
+            
         return best_move, value
