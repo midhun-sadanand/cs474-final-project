@@ -84,19 +84,19 @@ def main():
     node_counter_minimax = {'nodes': 0}
     node_counter_alphabeta = {'nodes': 0}
 
-    # Run Minimax
+    # minimax algo
     start_time_minimax = time.time()
     best_move_minimax, _ = minimax(game, MAX_DEPTH, True, node_counter_minimax)
     end_time_minimax = time.time()
     time_minimax = end_time_minimax - start_time_minimax
 
-    # Run Alpha-Beta Pruning
+    # minimax w/ alpha-beta algo
     start_time_alphabeta = time.time()
     best_move_alphabeta, _ = alphabeta(game, MAX_DEPTH, float('-inf'), float('inf'), True, node_counter_alphabeta)
     end_time_alphabeta = time.time()
     time_alphabeta = end_time_alphabeta - start_time_alphabeta
 
-    # Display results
+    # metrics
     print(f"\nMinimax Results for {game_choice.replace('_', ' ').title()}:")
     print(f"Best Move: {best_move_minimax}")
     print(f"Nodes Explored: {node_counter_minimax['nodes']}")
@@ -107,7 +107,7 @@ def main():
     print(f"Nodes Explored: {node_counter_alphabeta['nodes']}")
     print(f"Time Taken: {time_alphabeta:.6f} seconds")
 
-    # Comparison
+    # analysis of alpha-beta pruning effect
     if node_counter_minimax['nodes'] > 0:
         node_reduction = ((node_counter_minimax['nodes'] - node_counter_alphabeta['nodes']) / node_counter_minimax['nodes']) * 100
     else:

@@ -2,19 +2,19 @@
 
 import random
 
-# Constants representing players and empty cells
+# cell representations
 EMPTY = 0
-PLAYER1 = 1  # AI (Maximizing Player)
-PLAYER2 = -1  # Opponent (Minimizing Player)
+PLAYER1 = 1
+PLAYER2 = -1 
 
 class DotsAndBoxes:
     def __init__(self, initial_state, size=3):
         self.initial = initial_state 
-        self.size = size  # Number of boxes per row/column
-        self.h_lines = [[0] * (size) for _ in range(size + 1)]  # Horizontal lines
-        self.v_lines = [[0] * (size + 1) for _ in range(size)]  # Vertical lines
-        self.boxes = [[0] * size for _ in range(size)]  # 0: unclaimed, 1: Player1, -1: Player2
-        self.current_player = 1  # Initialize current player
+        self.size = size  
+        self.h_lines = [[0] * (size) for _ in range(size + 1)]  
+        self.v_lines = [[0] * (size + 1) for _ in range(size)] 
+        self.boxes = [[0] * size for _ in range(size)]
+        self.current_player = 1
         if not self.initial:
             self.randomize_lines()
 
@@ -24,7 +24,7 @@ class DotsAndBoxes:
         for i in range(size * 2 + 1):
             line = ''
             if i % 2 == 0:
-                # Dots and horizontal lines
+                # dots and h_lines
                 for j in range(size):
                     line += '•'
                     if self.h_lines[i // 2][j] == PLAYER1:
@@ -35,7 +35,7 @@ class DotsAndBoxes:
                         line += '   '
                 line += '•'
             else:
-                # Vertical lines and boxes
+                # v_lines and boxes (b/w the dots and h_lines)
                 for j in range(size + 1):
                     if self.v_lines[i // 2][j] == PLAYER1:
                         line += '\033[31m|\033[0m'  # Red for PLAYER1
@@ -56,12 +56,12 @@ class DotsAndBoxes:
 
     def get_valid_moves(self):
         moves = []
-        # Horizontal lines
+        # iterate thru h_lines
         for i in range(len(self.h_lines)):
             for j in range(len(self.h_lines[0])):
                 if self.h_lines[i][j] == 0:
                     moves.append(('h', i, j))
-        # Vertical lines
+        # iterate thru v_lines
         for i in range(len(self.v_lines)):
             for j in range(len(self.v_lines[0])):
                 if self.v_lines[i][j] == 0:
@@ -74,7 +74,7 @@ class DotsAndBoxes:
             self.h_lines[i][j] = -1
         else:
             self.v_lines[i][j] = -1
-        # Check for completed boxes
+        # see if any new boxes were added
         self.update_boxes()
 
     def undo_move(self, move):
@@ -83,7 +83,7 @@ class DotsAndBoxes:
             self.h_lines[i][j] = False
         else:
             self.v_lines[i][j] = False
-        # Revert boxes if they were claimed
+        # take away any completed boxes from move (for minimax)
         self.revert_boxes()
 
     def update_boxes(self):
@@ -92,33 +92,35 @@ class DotsAndBoxes:
             for j in range(size):
                 if self.boxes[i][j] == 0:
                     if self.h_lines[i][j] and self.h_lines[i + 1][j] and self.v_lines[i][j] and self.v_lines[i][j + 1]:
-                        # Assign box to the current player
+                        # assign box to curr_player
                         self.boxes[i][j] = self.current_player
 
     def randomize_lines(self):
         total_lines = (len(self.h_lines) * len(self.h_lines[0])) + (len(self.v_lines) * len(self.v_lines[0]))
         one_third = total_lines // 3
 
-        # Create a pool of moves with equal ownership
+        # ensure equal distribution of moves
         moves = [PLAYER1] * one_third + [PLAYER2] * one_third + [EMPTY] * one_third
-        if total_lines % 2 != 0:  # For odd total lines, add a neutral line
+        # account for odd number of total lines
+        if total_lines % 2 != 0:
             moves.append(EMPTY)
         random.shuffle(moves)
 
-        # Fill horizontal lines
+        # fill in horizontal lines first
         for i in range(len(self.h_lines)):
             for j in range(len(self.h_lines[i])):
                 self.h_lines[i][j] = moves.pop()
 
-        # Fill vertical lines
+        # fill in vertical lines first
         for i in range(len(self.v_lines)):
             for j in range(len(self.v_lines[i])):
                 self.v_lines[i][j] = moves.pop()
 
-        # Update boxes based on the randomized lines
+        # check if any boxes were completed
         self.update_boxes()
 
     def revert_boxes(self):
+        # change all boxes back to empty
         size = self.size
         for i in range(size):
             for j in range(size):
@@ -138,8 +140,8 @@ class DotsAndBoxes:
             elif player2_score > player1_score:
                 return False if maximizing_player else True
             else:
-                return None  # Draw
-        return None  # Game not over
+                return None 
+        return None
 
     def set_current_player(self, player):
         self.current_player = player

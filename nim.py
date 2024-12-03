@@ -37,6 +37,6 @@ class Nim:
 
     def get_winner(self, maximizing_player):
         if self.is_terminal_node():
-            # The player who made the last move wins
+            # last move wins
             return not maximizing_player
-        return None  # Game not over
+        return None

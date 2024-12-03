@@ -17,18 +17,20 @@ def alphabeta(game, depth, alpha, beta, maximizingPlayer, node_counter):
             elif winner is False:
                 return (None, float('-inf'))
             else:
-                return (None, 0)  # Draw
+                return (None, 0) 
         else:
             return (None, evaluate(game, maximizingPlayer))
 
     valid_moves = game.get_valid_moves()
 
+    # greedy maximize
     if maximizingPlayer:
         value = float('-inf')
         best_move = None
         for move in valid_moves:
             if hasattr(game, 'set_current_player'):
-                game.set_current_player(1)  # Maximizing player
+                # maximizing player
+                game.set_current_player(1)  
             if isinstance(game, ConnectFour):
                 game.make_move(move, PLAYER1)
             elif isinstance(game, Nim):
@@ -52,15 +54,17 @@ def alphabeta(game, depth, alpha, beta, maximizingPlayer, node_counter):
                 value = new_score
                 best_move = move
             alpha = max(alpha, value)
+            # beta cutoff
             if alpha >= beta:
-                break  # Beta cut-off
+                break
         return best_move, value
+    # greedy minimize
     else:
         value = float('inf')
         best_move = None
         for move in valid_moves:
             if hasattr(game, 'set_current_player'):
-                game.set_current_player(-1)  # Minimizing player
+                game.set_current_player(-1)  
             if isinstance(game, ConnectFour):
                 game.make_move(move, PLAYER2)
             elif isinstance(game, Nim):
@@ -84,6 +88,7 @@ def alphabeta(game, depth, alpha, beta, maximizingPlayer, node_counter):
                 value = new_score
                 best_move = move
             beta = min(beta, value)
+            # beta cutoff
             if alpha >= beta:
-                break  # Alpha cut-off
+                break
         return best_move, value

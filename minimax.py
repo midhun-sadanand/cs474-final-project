@@ -23,12 +23,13 @@ def minimax(game, depth, maximizingPlayer, node_counter):
 
     valid_moves = game.get_valid_moves()
 
+    # greedy maximize
     if maximizingPlayer:
         value = float('-inf')
         best_move = None
         for move in valid_moves:
             if hasattr(game, 'set_current_player'):
-                game.set_current_player(1)  # Maximizing player
+                game.set_current_player(1) 
             if isinstance(game, ConnectFour):
                 game.make_move(move, PLAYER1)
             elif isinstance(game, Nim):
@@ -51,13 +52,15 @@ def minimax(game, depth, maximizingPlayer, node_counter):
             if new_score > value:
                 value = new_score
                 best_move = move
+            # no beta cutoff
         return best_move, value
+    # greedy minimize
     else:
         value = float('inf')
         best_move = None
         for move in valid_moves:
             if hasattr(game, 'set_current_player'):
-                game.set_current_player(-1)  # Minimizing player
+                game.set_current_player(-1)
             if isinstance(game, ConnectFour):
                 game.make_move(move, PLAYER2)
             elif isinstance(game, Nim):
@@ -80,4 +83,5 @@ def minimax(game, depth, maximizingPlayer, node_counter):
             if new_score < value:
                 value = new_score
                 best_move = move
+            # no beta cutoff
         return best_move, value

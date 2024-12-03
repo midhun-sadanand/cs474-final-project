@@ -2,18 +2,19 @@
 
 import random
 
-# Constants representing players and empty cells
+# cell representation
 EMPTY = 0
-PLAYER1 = 1  # AI (Maximizing Player)
-PLAYER2 = -1  # Opponent (Minimizing Player)
+PLAYER1 = 1  
+PLAYER2 = -1 
 
-# Symbols for visual representation
+# visuals
 SYMBOLS = {
     EMPTY: '·',
     PLAYER1: 'X',
     PLAYER2: 'O'
 }
 
+# 4x4 board
 rows = 4
 cols = 4
 
@@ -28,7 +29,7 @@ class ConnectFour:
         player1_count = 0
         player2_count = 0
 
-        # Count the number of pieces for each player
+        # count each players' pieces
         for row in board:
             for cell in row:
                 if cell == PLAYER1:
@@ -36,18 +37,18 @@ class ConnectFour:
                 elif cell == PLAYER2:
                     player2_count += 1
 
-        # Check if the counts are valid
+        # ensure valid number of pieces
         if player1_count - player2_count != 1:
             return False  # Invalid board state
 
-        # Check for floating pieces
+        # check for floating pieces
         for col in range(4):
             empty_found = False
             for row in range(4):
                 if board[3-row][3-col] == EMPTY:
                     empty_found = True
                 elif empty_found:
-                    return False  # Invalid board: floating piece found
+                    return False 
 
         return True
 
@@ -79,7 +80,7 @@ class ConnectFour:
             if self.board[row][col] == EMPTY:
                 self.board[row][col] = player
                 return True
-        return False  # Column is full
+        return False
 
     def undo_move(self, col):
         for row in range(self.rows):
@@ -92,23 +93,21 @@ class ConnectFour:
         return all(self.board[0][col] != EMPTY for col in range(self.cols))
 
     def check_win(self, player):
-        # Check horizontal, vertical, and diagonal lines for a win
-        # Horizontal
+        # horizontal
         for row in range(self.rows):
             for col in range(self.cols - 3):
                 if all(self.board[row][col + i] == player for i in range(4)):
                     return True
-        # Vertical
+        # vertical
         for col in range(self.cols):
             for row in range(self.rows - 3):
                 if all(self.board[row + i][col] == player for i in range(4)):
                     return True
-        # Diagonal (positive slope)
+        # the 2 diagonals
         for row in range(3, self.rows):
             for col in range(self.cols - 3):
                 if all(self.board[row - i][col + i] == player for i in range(4)):
                     return True
-        # Diagonal (negative slope)
         for row in range(self.rows - 3):
             for col in range(self.cols - 3):
                 if all(self.board[row + i][col + i] == player for i in range(4)):
@@ -124,4 +123,4 @@ class ConnectFour:
         elif self.check_win(PLAYER2):
             return False if maximizing_player else True
         else:
-            return None  # Draw or game not over
+            return None
