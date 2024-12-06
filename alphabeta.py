@@ -15,7 +15,7 @@ def alphabeta(game, depth, alpha, beta, maximizingPlayer, node_counter, tt):
     # If using transposition table, attempt lookup
     if tt is not None:
         state_key = game.get_state_key()
-        use_entry, tt_move, tt_value = tt.lookup(state_key, depth, alpha, beta)
+        use_entry, tt_move, tt_value = tt.ab_lookup(state_key, depth, alpha, beta)
         if use_entry:
             return tt_move, tt_value
 
@@ -79,7 +79,7 @@ def alphabeta(game, depth, alpha, beta, maximizingPlayer, node_counter, tt):
                 move_flag = LOWERBOUND
             else:
                 move_flag = EXACT
-            tt.store(state_key, depth, value, best_move, move_flag, original_alpha, original_beta)
+            tt.ab_store(state_key, depth, value, best_move, move_flag, original_alpha, original_beta)
 
         return best_move, value
 
@@ -127,6 +127,6 @@ def alphabeta(game, depth, alpha, beta, maximizingPlayer, node_counter, tt):
                 move_flag = LOWERBOUND
             else:
                 move_flag = EXACT
-            tt.store(state_key, depth, value, best_move, move_flag, original_alpha, original_beta)
+            tt.ab_store(state_key, depth, value, best_move, move_flag, original_alpha, original_beta)
 
         return best_move, value
