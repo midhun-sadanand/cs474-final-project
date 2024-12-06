@@ -1,10 +1,8 @@
-# minimax.py
-
 from heuristic import evaluate
 from connectfour import ConnectFour, PLAYER1, PLAYER2
 from dotsandboxes import DotsAndBoxes
 from nim import Nim
-from transpositiontable import TranspositionTable, EXACT, LOWERBOUND, UPPERBOUND
+from transpositiontable import TranspositionTable, EXACT
 
 def minimax(game, depth, maximizingPlayer, node_counter, tt):
     node_counter['nodes'] += 1
@@ -31,7 +29,6 @@ def minimax(game, depth, maximizingPlayer, node_counter, tt):
 
     valid_moves = game.get_valid_moves()
 
-    # greedy maximize
     if maximizingPlayer:
         value = float('-inf')
         best_move = None
@@ -42,31 +39,31 @@ def minimax(game, depth, maximizingPlayer, node_counter, tt):
                 heap_index, remove_count = move
                 game.make_move(heap_index, remove_count)
             elif isinstance(game, DotsAndBoxes):
-                game.set_current_player(1) 
+                game.set_current_player(PLAYER1)
                 game.make_move(move)
 
             new_score = minimax(game, depth - 1, False, node_counter, tt)[1]
 
+            # Undo move
             if isinstance(game, ConnectFour):
                 game.undo_move(move)
             elif isinstance(game, Nim):
                 heap_index, remove_count = move
                 game.undo_move(heap_index, remove_count)
             elif isinstance(game, DotsAndBoxes):
-                game.set_current_player(1) 
+                game.set_current_player(PLAYER1)
                 game.undo_move(move)
-                
+
             if new_score > value:
                 value = new_score
                 best_move = move
-            # no beta cutoff
 
-        # Store results in TT if in use
+        # Store results in TT if in use (only EXACT for minimax)
         if tt is not None:
             tt.mm_store(state_key, depth, value, best_move)
 
         return best_move, value
-    # greedy minimize
+
     else:
         value = float('inf')
         best_move = None
@@ -77,26 +74,26 @@ def minimax(game, depth, maximizingPlayer, node_counter, tt):
                 heap_index, remove_count = move
                 game.make_move(heap_index, remove_count)
             elif isinstance(game, DotsAndBoxes):
-                game.set_current_player(1) 
+                game.set_current_player(PLAYER2)
                 game.make_move(move)
 
             new_score = minimax(game, depth - 1, True, node_counter, tt)[1]
 
+            # Undo move
             if isinstance(game, ConnectFour):
                 game.undo_move(move)
             elif isinstance(game, Nim):
                 heap_index, remove_count = move
                 game.undo_move(heap_index, remove_count)
             elif isinstance(game, DotsAndBoxes):
-                game.set_current_player(1) 
+                game.set_current_player(PLAYER2)
                 game.undo_move(move)
 
             if new_score < value:
                 value = new_score
                 best_move = move
-            # no beta cutoff
 
-        # Store results in TT if in use
+        # Store results in TT if in use (only EXACT for minimax)
         if tt is not None:
             tt.mm_store(state_key, depth, value, best_move)
 

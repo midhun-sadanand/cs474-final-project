@@ -11,7 +11,7 @@ class Nim:
 
     def init_heaps(self, heaps):
         if self.initial is True:
-            return heaps.copy()
+            return heaps
         else:
             return [random.randint(1, 7) for _ in range(len(heaps))]
 
