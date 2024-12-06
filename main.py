@@ -8,7 +8,14 @@ Group Members:
 
 How to Run the Test Script
     1. run "make" in terminal
-    2. Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random]
+    2. Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]
+    
+    Comparison 1: minimax vs. alpha-beta pruning algorithm
+    Comparison 2: minimax vs. scout algorithm
+    Comparison 3: minimax vs. transposition tables + mimimax
+    Comparison 4: minimax vs. transposition tables + alpha-beta
+    Comparison 5: minimax vs. transposition tables + scout
+
 
 Brief Description of Final Project
     Our final project compares the performance of a minimax algorithm with and without alpha-beta 
@@ -38,22 +45,29 @@ from nim import Nim
 from dotsandboxes import DotsAndBoxes
 from minimax import minimax
 from alphabeta import alphabeta
+from transpositiontable import TranspositionTable  
 
 def main():
-    if len(sys.argv) < 3:
-        print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random]")
+    if len(sys.argv) < 4:
+        print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
         sys.exit(1)
 
     game_choice = sys.argv[1].lower().replace('_', '')
     state = sys.argv[2]
+    agent = sys.argv[3]
 
+    if(agent in ['cmp3', 'cmp4', 'cmp5']):
+        has_tt = True
+    else:
+        has_tt = False
+    
     if game_choice == 'connectfour':
         if(state == 'initial'):
             game = ConnectFour(True)
         elif (state == 'random'):
             game = ConnectFour(False)
         else:
-            print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random]")
+            print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
             sys.exit(1)
         MAX_DEPTH = 4
     elif game_choice == 'nim':
@@ -62,7 +76,7 @@ def main():
         elif (state == 'random'):
             game = Nim(False)
         else:
-            print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random]")
+            print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
             sys.exit(1)
         MAX_DEPTH = 10
     elif game_choice == 'dotsandboxes':
@@ -73,10 +87,10 @@ def main():
             game = DotsAndBoxes(False)
             MAX_DEPTH = 10
         else:
-            print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random]")
+            print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
             sys.exit(1)
     else:
-        print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random]")
+        print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
         sys.exit(1)
 
     game.display_board()
@@ -90,9 +104,11 @@ def main():
     end_time_minimax = time.time()
     time_minimax = end_time_minimax - start_time_minimax
 
+    tt = TranspositionTable() if has_tt else None
+
     # minimax w/ alpha-beta algo
     start_time_alphabeta = time.time()
-    best_move_alphabeta, _ = alphabeta(game, MAX_DEPTH, float('-inf'), float('inf'), True, node_counter_alphabeta)
+    best_move_alphabeta, _ = alphabeta(game, MAX_DEPTH, float('-inf'), float('inf'), True, node_counter_alphabeta, tt)
     end_time_alphabeta = time.time()
     time_alphabeta = end_time_alphabeta - start_time_alphabeta
 

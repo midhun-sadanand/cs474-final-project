@@ -1,5 +1,3 @@
-# nim.py
-
 import random
 
 class Nim:
@@ -7,11 +5,15 @@ class Nim:
         self.initial = initial_state
         self.heaps = self.init_heaps(heaps)
         
+    def get_state_key(self):
+        # Return a tuple of heap sizes
+        return tuple(self.heaps)
+
     def init_heaps(self, heaps):
         if self.initial is True:
             return heaps.copy()
         else:
-            return [random.randint(1, 7), random.randint(1, 7), random.randint(1, 7)]
+            return [random.randint(1, 7) for _ in range(len(heaps))]
 
     def display_board(self):
         print("\nCurrent Heaps:")
@@ -37,6 +39,6 @@ class Nim:
 
     def get_winner(self, maximizing_player):
         if self.is_terminal_node():
-            # last move wins
+            # Last move wins - if we are in a terminal state, the player who just moved (opposite of maximizing) wins
             return not maximizing_player
         return None
