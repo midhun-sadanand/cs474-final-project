@@ -4,7 +4,7 @@ from nim import Nim
 from dotsandboxes import DotsAndBoxes
 from transpositiontable import TranspositionTable, EXACT, LOWERBOUND, UPPERBOUND
 
-def alphabeta(game, depth, alpha, beta, maximizingPlayer, node_counter, tt):
+def alphabeta(game, depth, game_size, alpha, beta, maximizingPlayer, node_counter, tt):
     node_counter['nodes'] += 1
 
     original_alpha = alpha
@@ -33,7 +33,10 @@ def alphabeta(game, depth, alpha, beta, maximizingPlayer, node_counter, tt):
         else:
             return (None, evaluate(game, maximizingPlayer))
 
-    valid_moves = game.get_valid_moves()
+    if isinstance(game, Nim):
+        valid_moves = game.get_valid_moves(game_size)
+    else:
+        valid_moves = game.get_valid_moves()
 
     if maximizingPlayer:
         value = float('-inf')
@@ -51,7 +54,7 @@ def alphabeta(game, depth, alpha, beta, maximizingPlayer, node_counter, tt):
                 game.make_move(move)
 
             # Search deeper
-            new_score = alphabeta(game, depth - 1, alpha, beta, False, node_counter, tt)[1]
+            new_score = alphabeta(game, depth - 1, game_size, alpha, beta, False, node_counter, tt)[1]
 
             # Undo move
             if isinstance(game, ConnectFour):
@@ -96,7 +99,7 @@ def alphabeta(game, depth, alpha, beta, maximizingPlayer, node_counter, tt):
                 game.set_current_player(PLAYER2)
                 game.make_move(move)
 
-            new_score = alphabeta(game, depth - 1, alpha, beta, True, node_counter, tt)[1]
+            new_score = alphabeta(game, depth - 1, game_size, alpha, beta, True, node_counter, tt)[1]
 
             if isinstance(game, ConnectFour):
                 game.undo_move(move)

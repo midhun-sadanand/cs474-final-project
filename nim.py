@@ -31,7 +31,14 @@ class Nim:
         for i, heap in enumerate(self.heaps):
             print(f"Heap {i}: {'|' * heap} ({heap})")
 
-    def get_valid_moves(self):
+    def get_valid_moves(self, game_size):
+        if(game_size == 'small'):
+            valid_moves = []
+            for i, heap in enumerate(self.heaps):
+                if heap > 0:
+                    for remove in range(1, 4):
+                        valid_moves.append((i, remove))
+            return valid_moves
         valid_moves = []
         for i, heap in enumerate(self.heaps):
             if heap > 0:

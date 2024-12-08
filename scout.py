@@ -4,7 +4,7 @@ from nim import Nim
 from dotsandboxes import DotsAndBoxes
 from transpositiontable import TranspositionTable, EXACT, LOWERBOUND, UPPERBOUND
 
-def scout(game, depth, alpha, beta, maximizingPlayer, node_counter, tt):
+def scout(game, depth, game_size, alpha, beta, maximizingPlayer, node_counter, tt):
     """
     Scout integrated with alpha-beta pruning:
     
@@ -41,7 +41,10 @@ def scout(game, depth, alpha, beta, maximizingPlayer, node_counter, tt):
         else:
             return (None, evaluate(game, maximizingPlayer))
 
-    valid_moves = game.get_valid_moves()
+    if isinstance(game, Nim):
+        valid_moves = game.get_valid_moves(game_size)
+    else:
+        valid_moves = game.get_valid_moves()
     if not valid_moves:
         return None, evaluate(game, maximizingPlayer)
 
@@ -66,7 +69,7 @@ def scout(game, depth, alpha, beta, maximizingPlayer, node_counter, tt):
             if first_move:
                 # First move: full alpha-beta search
                 first_move = False
-                _, score = scout(game, depth - 1, alpha, beta, False, node_counter, tt)
+                _, score = scout(game, depth - 1, game_size, alpha, beta, False, node_counter, tt)
 
                 # Undo move
                 if isinstance(game, ConnectFour):
@@ -89,7 +92,7 @@ def scout(game, depth, alpha, beta, maximizingPlayer, node_counter, tt):
                 verify_alpha = baseline_value
                 verify_beta = baseline_value + 1
 
-                _, verify_score = scout(game, depth - 1, verify_alpha, verify_beta, False, node_counter, tt)
+                _, verify_score = scout(game, depth - 1, game_size, verify_alpha, verify_beta, False, node_counter, tt)
 
                 # Undo move
                 if isinstance(game, ConnectFour):
@@ -112,7 +115,7 @@ def scout(game, depth, alpha, beta, maximizingPlayer, node_counter, tt):
                         game.set_current_player(PLAYER1)
                         game.make_move(move)
 
-                    _, full_score = scout(game, depth - 1, alpha, beta, False, node_counter, tt)
+                    _, full_score = scout(game, depth - 1, game_size, alpha, beta, False, node_counter, tt)
 
                     # Undo again
                     if isinstance(game, ConnectFour):
@@ -148,7 +151,7 @@ def scout(game, depth, alpha, beta, maximizingPlayer, node_counter, tt):
             if first_move:
                 # First move: full alpha-beta search
                 first_move = False
-                _, score = scout(game, depth - 1, alpha, beta, True, node_counter, tt)
+                _, score = scout(game, depth - 1, game_size, alpha, beta, True, node_counter, tt)
 
                 # Undo move
                 if isinstance(game, ConnectFour):
@@ -171,7 +174,7 @@ def scout(game, depth, alpha, beta, maximizingPlayer, node_counter, tt):
                 verify_alpha = baseline_value - 1
                 verify_beta = baseline_value
 
-                _, verify_score = scout(game, depth - 1, verify_alpha, verify_beta, True, node_counter, tt)
+                _, verify_score = scout(game, depth - 1, game_size, verify_alpha, verify_beta, True, node_counter, tt)
 
                 # Undo move
                 if isinstance(game, ConnectFour):
@@ -194,7 +197,7 @@ def scout(game, depth, alpha, beta, maximizingPlayer, node_counter, tt):
                         game.set_current_player(PLAYER2)
                         game.make_move(move)
 
-                    _, full_score = scout(game, depth - 1, alpha, beta, True, node_counter, tt)
+                    _, full_score = scout(game, depth - 1, game_size, alpha, beta, True, node_counter, tt)
 
                     # Undo again
                     if isinstance(game, ConnectFour):

@@ -4,7 +4,7 @@ from dotsandboxes import DotsAndBoxes
 from nim import Nim
 from transpositiontable import TranspositionTable, EXACT
 
-def minimax(game, depth, maximizingPlayer, node_counter, tt):
+def minimax(game, depth, game_size, maximizingPlayer, node_counter, tt):
     node_counter['nodes'] += 1
 
     state_key = game.get_state_key(maximizingPlayer)
@@ -28,7 +28,10 @@ def minimax(game, depth, maximizingPlayer, node_counter, tt):
         else:
             return (None, evaluate(game, maximizingPlayer))
 
-    valid_moves = game.get_valid_moves()
+    if isinstance(game, Nim):
+        valid_moves = game.get_valid_moves(game_size)
+    else:
+        valid_moves = game.get_valid_moves()
 
     if maximizingPlayer:
         value = float('-inf')
@@ -43,7 +46,7 @@ def minimax(game, depth, maximizingPlayer, node_counter, tt):
                 game.set_current_player(PLAYER1)
                 game.make_move(move)
 
-            new_score = minimax(game, depth - 1, False, node_counter, tt)[1]
+            new_score = minimax(game, depth - 1, game_size, False, node_counter, tt)[1]
 
             # Undo move
             if isinstance(game, ConnectFour):
@@ -78,7 +81,7 @@ def minimax(game, depth, maximizingPlayer, node_counter, tt):
                 game.set_current_player(PLAYER2)
                 game.make_move(move)
 
-            new_score = minimax(game, depth - 1, True, node_counter, tt)[1]
+            new_score = minimax(game, depth - 1, game_size, True, node_counter, tt)[1]
 
             # Undo move
             if isinstance(game, ConnectFour):

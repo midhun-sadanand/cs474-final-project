@@ -101,7 +101,7 @@ def main():
 
     # minimax algo
     start_time_minimax = time.time()
-    best_move_minimax, _ = minimax(game, MAX_DEPTH, True, node_counter_minimax, None)
+    best_move_minimax, _ = minimax(game, MAX_DEPTH, game_size, True, node_counter_minimax, None)
     end_time_minimax = time.time()
     time_minimax = end_time_minimax - start_time_minimax
 
@@ -114,7 +114,7 @@ def main():
         else:
             agent = "Alpha-Beta Pruning + Transposition"
         start_time_agent = time.time()
-        best_move_agent, _ = alphabeta(game, MAX_DEPTH, float('-inf'), float('inf'), True, node_counter_agent, tt)
+        best_move_agent, _ = alphabeta(game, MAX_DEPTH, game_size, float('-inf'), float('inf'), True, node_counter_agent, tt)
         end_time_agent = time.time()
         time_agent = end_time_agent - start_time_agent
     
@@ -122,7 +122,7 @@ def main():
     elif(agent == 'cmp3'):
         agent = "Minimax + Transposition"
         start_time_agent = time.time()
-        best_move_agent, _ = minimax(game, MAX_DEPTH, True, node_counter_agent, tt)
+        best_move_agent, _ = minimax(game, MAX_DEPTH, game_size, True, node_counter_agent, tt)
         end_time_agent = time.time()
         time_agent = end_time_agent - start_time_agent
 
@@ -133,7 +133,7 @@ def main():
         else:
             agent = "Scout + Transposition"
         start_time_agent = time.time()
-        best_move_agent, _ = scout(game, MAX_DEPTH, float('-inf'), float('inf'), True, node_counter_agent, tt)
+        best_move_agent, _ = scout(game, MAX_DEPTH, game_size, float('-inf'), float('inf'), True, node_counter_agent, tt)
         end_time_agent = time.time()
         time_agent = end_time_agent - start_time_agent
 
