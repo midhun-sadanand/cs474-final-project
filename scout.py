@@ -5,116 +5,222 @@ from dotsandboxes import DotsAndBoxes
 from transpositiontable import TranspositionTable, EXACT, LOWERBOUND, UPPERBOUND
 
 def scout(game, depth, alpha, beta, maximizingPlayer, node_counter, tt):
-    node_counter['nodes'] += 1
+    """
+    Scout integrated with alpha-beta pruning:
     
+    - First move: full alpha-beta search to establish baseline_value.
+    - Subsequent moves: null-window verification search. If verification suggests 
+      improvement, re-search fully with alpha-beta.
+    - Use TT for EXACT hits and adjust alpha/beta for LOWERBOUND/UPPERBOUND as in alpha-beta.
+    - Always return the best move found.
+    """
+
+    node_counter['nodes'] += 1
+    state_key = game.get_state_key(maximizingPlayer)
     original_alpha = alpha
     original_beta = beta
 
-    state_key = game.get_state_key(maximizingPlayer)
-
-    # If using a TT, try lookup
+    # TT Lookup
     if tt is not None:
         found, tt_move, tt_value = tt.ab_lookup(state_key, depth, alpha, beta)
         if found:
+            # If TT provided a conclusive result (EXACT or cutoff), return it
             return tt_move, tt_value
 
-    # Terminal or depth check
+    # Terminal or depth reached
     is_terminal = game.is_terminal_node()
     winner = game.get_winner(maximizingPlayer)
     if depth == 0 or is_terminal:
         if winner is not None:
-            if winner:  # maximizing player wins
+            if winner:
                 return (None, float('inf'))
-            elif winner is False:  # maximizing player loses
+            elif winner is False:
                 return (None, float('-inf'))
-            else:  # draw
-                return (None, 0)
+            else:
+                return (None, 0)  # Draw
         else:
             return (None, evaluate(game, maximizingPlayer))
 
     valid_moves = game.get_valid_moves()
-
-    # If no moves, evaluate the position
     if not valid_moves:
-        return (None, evaluate(game, maximizingPlayer))
+        return None, evaluate(game, maximizingPlayer)
 
+    # SCOUT + Alpha-Beta logic
     best_move = None
     first_move = True
-    value = float('-inf') if maximizingPlayer else float('inf')
 
-    # Scout logic:
-    # 1. For the first move, search full window as normal.
-    # 2. For subsequent moves, do a null-window search (alpha, alpha+1) to verify.
-    #    - If null-window search > alpha, re-search with full window.
-    #    - If null-window search >= beta, cutoff.
-    # This logic works best when moves are ordered (best moves first).
-    
-    for move in valid_moves:
-        # Make the move
-        if isinstance(game, ConnectFour):
-            game.make_move(move, PLAYER1 if maximizingPlayer else PLAYER2)
-        elif isinstance(game, Nim):
-            heap_index, remove_count = move
-            game.make_move(heap_index, remove_count)
-        elif isinstance(game, DotsAndBoxes):
-            game.set_current_player(PLAYER1 if maximizingPlayer else PLAYER2)
-            game.make_move(move)
+    if maximizingPlayer:
+        baseline_value = float('-inf')
 
-        if first_move:
-            # Full window search for the first move
-            new_move, new_score = scout(game, depth - 1, alpha, beta, not maximizingPlayer, node_counter, tt)
-            first_move = False
-        else:
-            # Null-window search to confirm superiority
-            new_move, new_score = scout(game, depth - 1, alpha, alpha + 1, not maximizingPlayer, node_counter, tt)
-            if maximizingPlayer:
-                # If the null-window search shows improvement
-                if new_score > alpha and new_score < beta:
-                    # Re-search with full window
-                    _, new_score = scout(game, depth - 1, new_score, beta, not maximizingPlayer, node_counter, tt)
+        for move in valid_moves:
+            # Make move
+            if isinstance(game, ConnectFour):
+                game.make_move(move, PLAYER1)
+            elif isinstance(game, Nim):
+                heap_index, remove_count = move
+                game.make_move(heap_index, remove_count)
+            elif isinstance(game, DotsAndBoxes):
+                game.set_current_player(PLAYER1)
+                game.make_move(move)
+
+            if first_move:
+                # First move: full alpha-beta search
+                first_move = False
+                _, score = scout(game, depth - 1, alpha, beta, False, node_counter, tt)
+
+                # Undo move
+                if isinstance(game, ConnectFour):
+                    game.undo_move(move)
+                elif isinstance(game, Nim):
+                    heap_index, remove_count = move
+                    game.undo_move(heap_index, remove_count)
+                elif isinstance(game, DotsAndBoxes):
+                    game.set_current_player(PLAYER1)
+                    game.undo_move(move)
+
+                baseline_value = score
+                best_move = move
+                alpha = max(alpha, baseline_value)
+                if alpha >= beta:
+                    break
             else:
-                # For minimizingPlayer, the logic is symmetrical with inverted signs
-                # However, since scout is typically explained from maximizing perspective,
-                # we rely on the symmetrical logic by flipping maximizingPlayer each call.
-                # This means the alpha/beta logic should still hold.
-                # If new_score < beta and new_score > alpha, re-search
-                if new_score < beta and new_score > alpha:
-                    _, new_score = scout(game, depth - 1, alpha, new_score, not maximizingPlayer, node_counter, tt)
+                # Verification step: null-window search
+                # We test if this move could possibly beat baseline_value
+                verify_alpha = baseline_value
+                verify_beta = baseline_value + 1
 
-        # Undo the move
-        if isinstance(game, ConnectFour):
-            game.undo_move(move)
-        elif isinstance(game, Nim):
-            heap_index, remove_count = move
-            game.undo_move(heap_index, remove_count)
-        elif isinstance(game, DotsAndBoxes):
-            game.set_current_player(PLAYER1 if maximizingPlayer else PLAYER2)
-            game.undo_move(move)
+                _, verify_score = scout(game, depth - 1, verify_alpha, verify_beta, False, node_counter, tt)
 
-        # Update alpha/beta based on maximizing/minimizing logic
-        if maximizingPlayer:
-            if new_score > value:
-                value = new_score
+                # Undo move
+                if isinstance(game, ConnectFour):
+                    game.undo_move(move)
+                elif isinstance(game, Nim):
+                    heap_index, remove_count = move
+                    game.undo_move(heap_index, remove_count)
+                elif isinstance(game, DotsAndBoxes):
+                    game.set_current_player(PLAYER1)
+                    game.undo_move(move)
+
+                if verify_score > baseline_value:
+                    # Re-search with full window since we might have a better move
+                    if isinstance(game, ConnectFour):
+                        game.make_move(move, PLAYER1)
+                    elif isinstance(game, Nim):
+                        heap_index, remove_count = move
+                        game.make_move(heap_index, remove_count)
+                    elif isinstance(game, DotsAndBoxes):
+                        game.set_current_player(PLAYER1)
+                        game.make_move(move)
+
+                    _, full_score = scout(game, depth - 1, alpha, beta, False, node_counter, tt)
+
+                    # Undo again
+                    if isinstance(game, ConnectFour):
+                        game.undo_move(move)
+                    elif isinstance(game, Nim):
+                        heap_index, remove_count = move
+                        game.undo_move(heap_index, remove_count)
+                    elif isinstance(game, DotsAndBoxes):
+                        game.set_current_player(PLAYER1)
+                        game.undo_move(move)
+
+                    if full_score > baseline_value:
+                        baseline_value = full_score
+                        best_move = move
+                        alpha = max(alpha, baseline_value)
+                        if alpha >= beta:
+                            break
+
+    else:
+        baseline_value = float('inf')
+
+        for move in valid_moves:
+            # Make move
+            if isinstance(game, ConnectFour):
+                game.make_move(move, PLAYER2)
+            elif isinstance(game, Nim):
+                heap_index, remove_count = move
+                game.make_move(heap_index, remove_count)
+            elif isinstance(game, DotsAndBoxes):
+                game.set_current_player(PLAYER2)
+                game.make_move(move)
+
+            if first_move:
+                # First move: full alpha-beta search
+                first_move = False
+                _, score = scout(game, depth - 1, alpha, beta, True, node_counter, tt)
+
+                # Undo move
+                if isinstance(game, ConnectFour):
+                    game.undo_move(move)
+                elif isinstance(game, Nim):
+                    heap_index, remove_count = move
+                    game.undo_move(heap_index, remove_count)
+                elif isinstance(game, DotsAndBoxes):
+                    game.set_current_player(PLAYER2)
+                    game.undo_move(move)
+
+                baseline_value = score
                 best_move = move
-            alpha = max(alpha, value)
-        else:
-            if new_score < value:
-                value = new_score
-                best_move = move
-            beta = min(beta, value)
+                beta = min(beta, baseline_value)
+                if beta <= alpha:
+                    break
+            else:
+                # Verification step for minimizing player
+                # null-window: [baseline_value-1, baseline_value]
+                verify_alpha = baseline_value - 1
+                verify_beta = baseline_value
 
-        # Cutoff check
-        if alpha >= beta:
-            break
+                _, verify_score = scout(game, depth - 1, verify_alpha, verify_beta, True, node_counter, tt)
 
-    # Store results in TT if in use
+                # Undo move
+                if isinstance(game, ConnectFour):
+                    game.undo_move(move)
+                elif isinstance(game, Nim):
+                    heap_index, remove_count = move
+                    game.undo_move(heap_index, remove_count)
+                elif isinstance(game, DotsAndBoxes):
+                    game.set_current_player(PLAYER2)
+                    game.undo_move(move)
+
+                if verify_score < baseline_value:
+                    # Re-search fully
+                    if isinstance(game, ConnectFour):
+                        game.make_move(move, PLAYER2)
+                    elif isinstance(game, Nim):
+                        heap_index, remove_count = move
+                        game.make_move(heap_index, remove_count)
+                    elif isinstance(game, DotsAndBoxes):
+                        game.set_current_player(PLAYER2)
+                        game.make_move(move)
+
+                    _, full_score = scout(game, depth - 1, alpha, beta, True, node_counter, tt)
+
+                    # Undo again
+                    if isinstance(game, ConnectFour):
+                        game.undo_move(move)
+                    elif isinstance(game, Nim):
+                        heap_index, remove_count = move
+                        game.undo_move(heap_index, remove_count)
+                    elif isinstance(game, DotsAndBoxes):
+                        game.set_current_player(PLAYER2)
+                        game.undo_move(move)
+
+                    if full_score < baseline_value:
+                        baseline_value = full_score
+                        best_move = move
+                        beta = min(beta, baseline_value)
+                        if beta <= alpha:
+                            break
+
+    # Store results in TT
     if tt is not None:
-        if value <= original_alpha:
+        if baseline_value <= original_alpha:
             move_flag = UPPERBOUND
-        elif value >= original_beta:
+        elif baseline_value >= original_beta:
             move_flag = LOWERBOUND
         else:
             move_flag = EXACT
-        tt.ab_store(state_key, depth, value, best_move, move_flag, original_alpha, original_beta)
+        tt.ab_store(state_key, depth, baseline_value, best_move, move_flag, original_alpha, original_beta)
 
-    return best_move, value
+    return best_move, baseline_value
