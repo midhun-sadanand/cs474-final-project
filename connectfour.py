@@ -10,13 +10,16 @@ SYMBOLS = {
     PLAYER2: 'O'
 }
 
-rows = 4
-cols = 4
-
 class ConnectFour:
-    def __init__(self, initial_state):
-        self.rows = rows
-        self.cols = cols
+    def __init__(self, initial_state, game_size):
+        self.rows = 4
+        self.cols = 4
+        if(game_size == 'medium'):
+            self.rows = 5
+            self.cols = 5
+        elif(game_size == 'large'):
+            self.rows = 6
+            self.cols = 7
         self.initial = initial_state
         self.board = self.initialize_board()
 
@@ -37,10 +40,10 @@ class ConnectFour:
         if player1_count - player2_count != 1:
             return False
 
-        for col in range(4):
+        for col in range(self.cols):
             empty_found = False
-            for row in range(4):
-                if board[3-row][3-col] == EMPTY:
+            for row in range(self.rows):
+                if board[(self.rows-1) - row][(self.cols-1) - col] == EMPTY:
                     empty_found = True
                 elif empty_found:
                     return False

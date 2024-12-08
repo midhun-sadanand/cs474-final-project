@@ -5,12 +5,16 @@ PLAYER1 = 1
 PLAYER2 = -1 
 
 class DotsAndBoxes:
-    def __init__(self, initial_state, size=3):
+    def __init__(self, initial_state, game_size):
         self.initial = initial_state 
-        self.size = size  
-        self.h_lines = [[0] * (size) for _ in range(size + 1)]  
-        self.v_lines = [[0] * (size + 1) for _ in range(size)]
-        self.boxes = [[0] * size for _ in range(size)]
+        self.size = 2
+        if(game_size == 'medium'):
+            self.size = 3
+        elif(game_size == 'large'):
+            self.size = 4
+        self.h_lines = [[0] * (self.size) for _ in range(self.size + 1)]  
+        self.v_lines = [[0] * (self.size + 1) for _ in range(self.size)]
+        self.boxes = [[0] * self.size for _ in range(self.size)]
         self.current_player = PLAYER1
         if not self.initial:
             self.randomize_lines()

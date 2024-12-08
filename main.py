@@ -16,7 +16,6 @@ How to Run the Test Script
     Comparison 4: minimax vs. transposition tables + alpha-beta
     Comparison 5: minimax vs. transposition tables + scout
 
-
 Brief Description of Final Project
     Our final project compares the performance of a minimax algorithm with and without alpha-beta 
     pruning in solving simplified Connect Four, 3-row Nim, and simplified Dots and Boxes. 
@@ -49,7 +48,7 @@ from scout import scout
 from transpositiontable import TranspositionTable  
 
 def main():
-    if len(sys.argv) < 4:
+    if len(sys.argv) < 5:
         print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [small/medium/large] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
         sys.exit(1)
 
@@ -65,28 +64,28 @@ def main():
     
     if game_choice == 'connectfour':
         if(state == 'initial'):
-            game = ConnectFour(True)
+            game = ConnectFour(True, game_size)
         elif (state == 'random'):
-            game = ConnectFour(False)
+            game = ConnectFour(False, game_size)
         else:
             print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [small/medium/large] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
             sys.exit(1)
         MAX_DEPTH = 4
     elif game_choice == 'nim':
         if(state == 'initial'):
-            game = Nim(True)
+            game = Nim(True, game_size)
         elif (state == 'random'):
-            game = Nim(False)
+            game = Nim(False, game_size)
         else:
             print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [small/medium/large] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
             sys.exit(1)
         MAX_DEPTH = 10
     elif game_choice == 'dotsandboxes':
         if(state == 'initial'):
-            game = DotsAndBoxes(True)
+            game = DotsAndBoxes(True, game_size)
             MAX_DEPTH = 3
         elif (state == 'random'):
-            game = DotsAndBoxes(False)
+            game = DotsAndBoxes(False, game_size)
             MAX_DEPTH = 10
         else:
             print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [small/medium/large] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")

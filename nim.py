@@ -1,19 +1,30 @@
 import random
 
 class Nim:
-    def __init__(self, initial_state, heaps=[3, 5, 7]):
+    def __init__(self, initial_state, game_size, heaps=[3, 5, 7]):
         self.initial = initial_state
-        self.heaps = self.init_heaps(heaps)
+        self.heaps = self.init_heaps(heaps, game_size)
         
     def get_state_key(self, maximizingPlayer):
         # Include maximizingPlayer in the state key
         return (maximizingPlayer, tuple(self.heaps))
 
-    def init_heaps(self, heaps):
-        if self.initial is True:
-            return heaps
+    def init_heaps(self, heaps, game_size):
+        if(game_size == 'large'):
+            if self.initial is True:
+                return heaps
+            else:
+                return [random.randint(1, 7) for _ in range(len(heaps))]
+        elif(game_size == 'medium'):
+            if self.initial is True:
+                return heaps[1:]
+            else:
+                return [random.randint(1, 7) for _ in range(len(heaps[1:]))]
         else:
-            return [random.randint(1, 7) for _ in range(len(heaps))]
+            if self.initial is True:
+                return heaps[2:]
+            else:
+                return [random.randint(1, 7) for _ in range(len(heaps[2:]))]
 
     def display_board(self):
         print("\nCurrent Heaps:")
