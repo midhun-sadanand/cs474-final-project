@@ -121,12 +121,7 @@ def main():
         time_agent = end_time_agent - start_time_agent
 
     # COMPARISONS 2 AND 5: scout (+ transposition tables)
-    # elif(agent in ['cmp2', 'cmp5']):
-    #     start_time_alphabeta = time.time()
-    #     best_move_alphabeta, _ = alphabeta(game, MAX_DEPTH, float('-inf'), float('inf'), True, node_counter_alphabeta, tt)
-    #     end_time_alphabeta = time.time()
-    #     time_alphabeta = end_time_alphabeta - start_time_alphabeta
-
+    # (Not fully implemented in this snippet)
     else:
         print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
         sys.exit(1)
@@ -137,24 +132,26 @@ def main():
     print(f"Nodes Explored: {node_counter_minimax['nodes']}")
     print(f"Time Taken: {time_minimax:.6f} seconds")
 
-    print(f"\nAlpha-Beta Pruning Results for {game_choice.replace('_', ' ').title()}:")
-    print(f"Best Move: {best_move_agent}")
-    print(f"Nodes Explored: {node_counter_agent['nodes']}")
-    print(f"Time Taken: {time_agent:.6f} seconds")
+    # If not cmp2 or cmp5 (since not implemented), print agent results:
+    if agent in ['cmp1', 'cmp3', 'cmp4']:
+        print(f"\nAlpha-Beta Pruning Results for {game_choice.replace('_', ' ').title()}:")
+        print(f"Best Move: {best_move_agent}")
+        print(f"Nodes Explored: {node_counter_agent['nodes']}")
+        print(f"Time Taken: {time_agent:.6f} seconds")
 
-    # analysis of alpha-beta pruning effect
-    if node_counter_minimax['nodes'] > 0:
-        node_reduction = ((node_counter_minimax['nodes'] - node_counter_agent['nodes']) / node_counter_minimax['nodes']) * 100
-    else:
-        node_reduction = 0
-    if time_minimax > 0:
-        time_reduction = ((time_minimax - time_agent) / time_minimax) * 100
-    else:
-        time_reduction = 0
+        # analysis of improvement
+        if node_counter_minimax['nodes'] > 0:
+            node_reduction = ((node_counter_minimax['nodes'] - node_counter_agent['nodes']) / node_counter_minimax['nodes']) * 100
+        else:
+            node_reduction = 0
+        if time_minimax > 0:
+            time_reduction = ((time_minimax - time_agent) / time_minimax) * 100
+        else:
+            time_reduction = 0
 
-    print("\nPerformance Improvement:")
-    print(f"Node Reduction: {node_reduction:.2f}%")
-    print(f"Time Reduction: {time_reduction:.2f}%")
+        print("\nPerformance Improvement:")
+        print(f"Node Reduction: {node_reduction:.2f}%")
+        print(f"Time Reduction: {time_reduction:.2f}%")
 
 if __name__ == "__main__":
     main()

@@ -5,9 +5,9 @@ class Nim:
         self.initial = initial_state
         self.heaps = self.init_heaps(heaps)
         
-    def get_state_key(self):
-        # Return a tuple of heap sizes
-        return tuple(self.heaps)
+    def get_state_key(self, maximizingPlayer):
+        # Include maximizingPlayer in the state key
+        return (maximizingPlayer, tuple(self.heaps))
 
     def init_heaps(self, heaps):
         if self.initial is True:

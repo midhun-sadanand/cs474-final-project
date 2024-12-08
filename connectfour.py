@@ -20,9 +20,9 @@ class ConnectFour:
         self.initial = initial_state
         self.board = self.initialize_board()
 
-    def get_state_key(self):
-        # Return the current board configuration as a tuple of tuples
-        return tuple(tuple(row) for row in self.board)
+    def get_state_key(self, maximizingPlayer):
+        # Include maximizingPlayer in the state key
+        return (maximizingPlayer, tuple(tuple(row) for row in self.board))
 
     def verify_board(self, board):
         player1_count = 0

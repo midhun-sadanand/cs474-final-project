@@ -10,19 +10,14 @@ def alphabeta(game, depth, alpha, beta, maximizingPlayer, node_counter, tt):
     original_alpha = alpha
     original_beta = beta
 
+    state_key = game.get_state_key(maximizingPlayer)
+
     # If using TT, try lookup
     if tt is not None:
-        state_key = game.get_state_key()
         found, tt_move, tt_value = tt.ab_lookup(state_key, depth, alpha, beta)
         if found:
-            # EXACT hit or a cutoff recognized by LOWERBOUND/UPPERBOUND
+            # EXACT hit or cutoff recognized by LOWERBOUND/UPPERBOUND
             return tt_move, tt_value
-        else:
-            # If it's not an EXACT return, ab_lookup may have updated alpha/beta
-            # We need to re-fetch alpha, beta from ab_lookup logic:
-            # Adjust alpha/beta based on TT info:
-            # We'll implement that logic inside ab_lookup for clarity.
-            pass
 
     # Check if node is terminal or depth reached
     is_terminal = game.is_terminal_node()

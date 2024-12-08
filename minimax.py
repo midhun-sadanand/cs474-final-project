@@ -7,9 +7,10 @@ from transpositiontable import TranspositionTable, EXACT
 def minimax(game, depth, maximizingPlayer, node_counter, tt):
     node_counter['nodes'] += 1
 
+    state_key = game.get_state_key(maximizingPlayer)
+
     # If using transposition table, attempt lookup
     if tt is not None:
-        state_key = game.get_state_key()
         use_entry, tt_move, tt_value = tt.mm_lookup(state_key, depth)
         if use_entry:
             return tt_move, tt_value

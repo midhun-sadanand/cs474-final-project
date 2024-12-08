@@ -11,16 +11,16 @@ class DotsAndBoxes:
         self.h_lines = [[0] * (size) for _ in range(size + 1)]  
         self.v_lines = [[0] * (size + 1) for _ in range(size)]
         self.boxes = [[0] * size for _ in range(size)]
-        self.current_player = 1
+        self.current_player = PLAYER1
         if not self.initial:
             self.randomize_lines()
 
-    def get_state_key(self):
-        # Represent h_lines, v_lines, boxes, and current_player
+    def get_state_key(self, maximizingPlayer):
         h_lines_key = tuple(tuple(row) for row in self.h_lines)
         v_lines_key = tuple(tuple(row) for row in self.v_lines)
         boxes_key = tuple(tuple(row) for row in self.boxes)
-        return (self.current_player, h_lines_key, v_lines_key, boxes_key)
+        # Include maximizingPlayer and current_player to differentiate states
+        return (maximizingPlayer, self.current_player, h_lines_key, v_lines_key, boxes_key)
 
     def display_board(self):
         print("\nCurrent Board:")
@@ -117,7 +117,6 @@ class DotsAndBoxes:
         size = self.size
         for i in range(size):
             for j in range(size):
-                # Re-check if box is still complete
                 if self.boxes[i][j] != 0:
                     if not (self.h_lines[i][j] != 0 and 
                             self.h_lines[i + 1][j] != 0 and 
