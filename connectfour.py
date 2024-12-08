@@ -57,7 +57,7 @@ class ConnectFour:
             # Let's place a small random number of moves:
             # For large boards, place at most 3 moves of Player1 and 2 moves of Player2 to keep it valid.
             # Player1_count = Player2_count + 1
-            moves_to_place = random.randint(0, 3)  # up to 3 moves of Player1
+            moves_to_place = random.randint(0, 5)  # up to 5 moves of Player1
             player1_count = moves_to_place
             player2_count = moves_to_place - 1 if moves_to_place > 0 else 0
 
