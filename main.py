@@ -8,7 +8,7 @@ Group Members:
 
 How to Run the Test Script
     1. run "make" in terminal
-    2. Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]
+    2. Usage: ./FinalProj [connectfour|nim|dotsandboxes] [small/medium/large] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]"
     
     Comparison 1: minimax vs. alpha-beta pruning algorithm
     Comparison 2: minimax vs. scout algorithm
@@ -50,12 +50,13 @@ from transpositiontable import TranspositionTable
 
 def main():
     if len(sys.argv) < 4:
-        print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
+        print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [small/medium/large] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
         sys.exit(1)
 
     game_choice = sys.argv[1].lower().replace('_', '')
-    state = sys.argv[2]
-    agent = sys.argv[3]
+    game_size = sys.argv[2]
+    state = sys.argv[3]
+    agent = sys.argv[4]
 
     if(agent in ['cmp3', 'cmp4', 'cmp5']):
         has_tt = True
@@ -68,7 +69,7 @@ def main():
         elif (state == 'random'):
             game = ConnectFour(False)
         else:
-            print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
+            print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [small/medium/large] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
             sys.exit(1)
         MAX_DEPTH = 4
     elif game_choice == 'nim':
@@ -77,7 +78,7 @@ def main():
         elif (state == 'random'):
             game = Nim(False)
         else:
-            print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
+            print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [small/medium/large] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
             sys.exit(1)
         MAX_DEPTH = 10
     elif game_choice == 'dotsandboxes':
@@ -88,10 +89,10 @@ def main():
             game = DotsAndBoxes(False)
             MAX_DEPTH = 10
         else:
-            print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
+            print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [small/medium/large] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
             sys.exit(1)
     else:
-        print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
+        print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [small/medium/large] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
         sys.exit(1)
 
     game.display_board()
@@ -109,6 +110,10 @@ def main():
 
     # COMPARISONS 1 AND 4: minimax w/ alpha-beta algo (+ transposition tables)
     if(agent in ['cmp1', 'cmp4']):
+        if(agent == 'cmp1'):
+            agent = "Alpha-Beta Pruning"
+        else:
+            agent = "Alpha-Beta Pruning + Transposition"
         start_time_agent = time.time()
         best_move_agent, _ = alphabeta(game, MAX_DEPTH, float('-inf'), float('inf'), True, node_counter_agent, tt)
         end_time_agent = time.time()
@@ -116,6 +121,7 @@ def main():
     
     # COMPARISON 3: minimax + transposition tables
     elif(agent == 'cmp3'):
+        agent = "Minimax + Transposition"
         start_time_agent = time.time()
         best_move_agent, _ = minimax(game, MAX_DEPTH, True, node_counter_agent, tt)
         end_time_agent = time.time()
@@ -123,6 +129,10 @@ def main():
 
     # COMPARISONS 2 AND 5: scout (+ transposition tables)
     elif(agent in ['cmp2', 'cmp5']):
+        if(agent == 'cmp2'):
+            agent = "Scout"
+        else:
+            agent = "Scout + Transposition"
         start_time_agent = time.time()
         best_move_agent, _ = scout(game, MAX_DEPTH, float('-inf'), float('inf'), True, node_counter_agent, tt)
         end_time_agent = time.time()
@@ -139,7 +149,7 @@ def main():
     print(f"Nodes Explored: {node_counter_minimax['nodes']}")
     print(f"Time Taken: {time_minimax:.6f} seconds")
 
-    print(f"\nAlpha-Beta Pruning Results for {game_choice.replace('_', ' ').title()}:")
+    print("\n{} Results for {}:".format(agent, game_choice.replace('_', ' ').title()))
     print(f"Best Move: {best_move_agent}")
     print(f"Nodes Explored: {node_counter_agent['nodes']}")
     print(f"Time Taken: {time_agent:.6f} seconds")
