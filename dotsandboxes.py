@@ -23,7 +23,7 @@ class DotsAndBoxes:
         h_lines_key = tuple(tuple(row) for row in self.h_lines)
         v_lines_key = tuple(tuple(row) for row in self.v_lines)
         boxes_key = tuple(tuple(row) for row in self.boxes)
-        # Include maximizingPlayer and current_player to differentiate states
+        # transposition table value includes player and board configuration 
         return (maximizingPlayer, self.current_player, h_lines_key, v_lines_key, boxes_key)
 
     def display_board(self):
@@ -117,7 +117,7 @@ class DotsAndBoxes:
         self.update_boxes()
 
     def revert_boxes(self):
-        # Recompute box ownership after undo
+        # recompute owned boxes to see if undoing move changed ownership
         size = self.size
         for i in range(size):
             for j in range(size):
@@ -129,7 +129,7 @@ class DotsAndBoxes:
                         self.boxes[i][j] = 0
 
     def is_terminal_node(self):
-        # If all lines are filled, it's terminal
+        # all lines filled ==> terminal board configuration
         return (all(all(cell != 0 for cell in row) for row in self.h_lines) and
                 all(all(cell != 0 for cell in row) for row in self.v_lines))
 

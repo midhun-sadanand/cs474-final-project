@@ -5,35 +5,18 @@ from nim import Nim
 from transpositiontable import TranspositionTable, EXACT, LOWERBOUND, UPPERBOUND
 
 def alphabeta(game, depth, game_size, alpha, beta, maximizingPlayer, node_counter, tt):
-    """
-    Alpha-Beta search with transposition table support.
-    
-    Parameters:
-        game: Current game state (ConnectFour, Nim, DotsAndBoxes).
-        depth: Maximum search depth.
-        game_size: String indicating the size of the game.
-        alpha, beta: Alpha-Beta window parameters.
-        maximizingPlayer: Boolean, True if we are maximizing the utility.
-        node_counter: Dictionary for counting nodes. {'nodes': int}
-        tt: TranspositionTable or None.
-
-    Returns:
-        (best_move, value):
-            best_move: The best move found.
-            value: The evaluation score.
-    """
     node_counter['nodes'] += 1
     original_alpha = alpha
     original_beta = beta
     state_key = game.get_state_key(maximizingPlayer)
 
-    # Transposition table lookup
+    # transposition table (if specified) lookup
     if tt is not None:
         found, tt_move, tt_value = tt.ab_lookup(state_key, depth, alpha, beta)
         if found:
             return tt_move, tt_value
 
-    # Terminal or depth check
+    # check if terminal node / if depth is reached
     is_terminal = game.is_terminal_node()
     winner = game.get_winner(maximizingPlayer)
     if depth == 0 or is_terminal:
@@ -52,12 +35,14 @@ def alphabeta(game, depth, game_size, alpha, beta, maximizingPlayer, node_counte
     else:
         valid_moves = game.get_valid_moves()
 
+    # similar to minimax algorithm here
     if maximizingPlayer:
         value = float('-inf')
         best_move = None
 
         for move in valid_moves:
-            # Apply move
+            
+            # apply move
             if isinstance(game, ConnectFour):
                 game.make_move(move, PLAYER1)
             elif isinstance(game, Nim):
@@ -67,10 +52,10 @@ def alphabeta(game, depth, game_size, alpha, beta, maximizingPlayer, node_counte
                 game.set_current_player(PLAYER1)
                 game.make_move(move)
 
-            # Recurse
+            # recurse
             _, new_score = alphabeta(game, depth - 1, game_size, alpha, beta, False, node_counter, tt)
 
-            # Undo move
+            # undo move
             if isinstance(game, ConnectFour):
                 game.undo_move(move)
             elif isinstance(game, Nim):
@@ -88,7 +73,7 @@ def alphabeta(game, depth, game_size, alpha, beta, maximizingPlayer, node_counte
             if alpha >= beta:
                 break
 
-        # Store in TT
+        # store in transposition table (if specified)
         if tt is not None:
             if value <= original_alpha:
                 move_flag = UPPERBOUND
@@ -105,7 +90,7 @@ def alphabeta(game, depth, game_size, alpha, beta, maximizingPlayer, node_counte
         best_move = None
 
         for move in valid_moves:
-            # Apply move
+            # apply move
             if isinstance(game, ConnectFour):
                 game.make_move(move, PLAYER2)
             elif isinstance(game, Nim):
@@ -115,10 +100,10 @@ def alphabeta(game, depth, game_size, alpha, beta, maximizingPlayer, node_counte
                 game.set_current_player(PLAYER2)
                 game.make_move(move)
 
-            # Recurse
+            # recurse
             _, new_score = alphabeta(game, depth - 1, game_size, alpha, beta, True, node_counter, tt)
 
-            # Undo move
+            # undo move
             if isinstance(game, ConnectFour):
                 game.undo_move(move)
             elif isinstance(game, Nim):
@@ -136,7 +121,7 @@ def alphabeta(game, depth, game_size, alpha, beta, maximizingPlayer, node_counte
             if alpha >= beta:
                 break
 
-        # Store in TT
+        # store in transposition table (if specified)
         if tt is not None:
             if value <= original_alpha:
                 move_flag = UPPERBOUND

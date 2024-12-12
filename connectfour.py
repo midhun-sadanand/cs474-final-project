@@ -12,15 +12,14 @@ SYMBOLS = {
 
 class ConnectFour:
     def __init__(self, initial_state, game_size):
+        self.rows = 4
+        self.cols = 4
         if(game_size == 'medium'):
             self.rows = 5
             self.cols = 5
         elif(game_size == 'large'):
             self.rows = 6
             self.cols = 7
-        else:
-            self.rows = 4
-            self.cols = 4
         self.initial = initial_state
         self.board = self.initialize_board()
 
@@ -31,18 +30,18 @@ class ConnectFour:
         player1_count = sum(cell == PLAYER1 for row in board for cell in row)
         player2_count = sum(cell == PLAYER2 for row in board for cell in row)
 
-        # Must differ by exactly 1 for a valid game state
+        # player 1 placed one more piece than player 2
         if player1_count - player2_count != 1:
             return False
 
-        # Check gravity (no floating pieces)
+        # check for any floating pieces
         for col in range(self.cols):
             empty_found = False
             for row in range(self.rows):
                 if board[(self.rows-1) - row][(self.cols-1) - col] == EMPTY:
                     empty_found = True
                 elif empty_found:
-                    # Found a piece above an empty slot
+                    # found a empty spot below
                     return False
         return True
 
@@ -50,18 +49,15 @@ class ConnectFour:
         if self.initial:
             return [[EMPTY for _ in range(self.cols)] for _ in range(self.rows)]
         else:
-            # Instead of randomizing every cell, we will place a small number of moves
-            # This ensures faster initialization and a valid state.
+            # heuristic: only place a set, fixed random number of moves on the board rather than randomizing for each cell of the board
             board = [[EMPTY for _ in range(self.cols)] for _ in range(self.rows)]
             
-            # Let's place a small random number of moves:
-            # For large boards, place at most 3 moves of Player1 and 2 moves of Player2 to keep it valid.
-            # Player1_count = Player2_count + 1
-            moves_to_place = random.randint(0, 5)  # up to 5 moves of Player1
+            # max 5 pieces for player 1
+            moves_to_place = random.randint(0, 5)
             player1_count = moves_to_place
             player2_count = moves_to_place - 1 if moves_to_place > 0 else 0
 
-            # Place Player1_count pieces of PLAYER1 and Player2_count pieces of PLAYER2 in valid positions
+            # player pieces must be in valid positions
             for p in range(player1_count):
                 self.place_random_piece(board, PLAYER1)
             for p in range(player2_count):
@@ -70,7 +66,6 @@ class ConnectFour:
             return board
 
     def place_random_piece(self, board, player):
-        # Place a piece in a random valid column
         valid_cols = [c for c in range(self.cols) if board[0][c] == EMPTY]
         if not valid_cols:
             return

@@ -6,7 +6,6 @@ class Nim:
         self.heaps = self.init_heaps(heaps, game_size)
         
     def get_state_key(self, maximizingPlayer):
-        # Include maximizingPlayer in the state key
         return (maximizingPlayer, tuple(self.heaps))
 
     def init_heaps(self, heaps, game_size):
@@ -57,6 +56,6 @@ class Nim:
 
     def get_winner(self, maximizing_player):
         if self.is_terminal_node():
-            # Last move wins - if we are in a terminal state, the player who just moved (opposite of maximizing) wins
+            # last move wins (player who didn't maximize)
             return not maximizing_player
         return None
