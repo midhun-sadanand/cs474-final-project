@@ -9,9 +9,9 @@ class DotsAndBoxes:
         self.initial = initial_state 
         self.size = 2
         if(game_size == 'medium'):
-            self.size = 2
-        elif(game_size == 'large'):
             self.size = 3
+        elif(game_size == 'large'):
+            self.size = 4
         self.h_lines = [[0] * (self.size) for _ in range(self.size + 1)]  
         self.v_lines = [[0] * (self.size + 1) for _ in range(self.size)]
         self.boxes = [[0] * self.size for _ in range(self.size)]
