@@ -35,7 +35,7 @@ def alphabeta(game, depth, game_size, alpha, beta, maximizingPlayer, node_counte
     else:
         valid_moves = game.get_valid_moves()
 
-    # similar to minimax algorithm here
+    # similar to minimax algorithm here (+ alpha-beta cutoff)
     if maximizingPlayer:
         value = float('-inf')
         best_move = None
