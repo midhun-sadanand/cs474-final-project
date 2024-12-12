@@ -45,7 +45,8 @@ from dotsandboxes import DotsAndBoxes
 from minimax import minimax
 from alphabeta import alphabeta
 from scout import scout
-from transpositiontable import TranspositionTable  
+from transpositiontable import TranspositionTable 
+from sampling import minimax_sample 
 
 def main():
     if len(sys.argv) < 5:
@@ -86,12 +87,16 @@ def main():
             MAX_DEPTH = 3
         elif (state == 'random'):
             game = DotsAndBoxes(False, game_size)
-            MAX_DEPTH = 10
+            MAX_DEPTH = 6
         else:
             print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [small/medium/large] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
             sys.exit(1)
     else:
         print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [small/medium/large] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
+        sys.exit(1)
+
+    if(agent not in ['cmp1', 'cmp2', 'cmp3', 'cmp4', 'cmp5']):
+        print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
         sys.exit(1)
 
     game.display_board()
@@ -101,7 +106,10 @@ def main():
 
     # minimax algo
     start_time_minimax = time.time()
-    best_move_minimax, _ = minimax(game, MAX_DEPTH, game_size, True, node_counter_minimax, None)
+    if(game_choice == 'dotsandboxes' and game_size == 'large'):
+        best_move_minimax, _ = minimax_sample(game, MAX_DEPTH, game_size, True, node_counter_minimax, None, 1000)
+    else:
+        best_move_minimax, _ = minimax(game, MAX_DEPTH, game_size, True, node_counter_minimax, None)
     end_time_minimax = time.time()
     time_minimax = end_time_minimax - start_time_minimax
 
@@ -143,7 +151,10 @@ def main():
         sys.exit(1)
 
     # metrics
-    print(f"\nMinimax Results for {game_choice.replace('_', ' ').title()}:")
+    if(game_choice == 'dotsandboxes' and game_size == 'large'):
+        print(f"\nMinimax Sampling Results for {game_choice.replace('_', ' ').title()}:")
+    else:
+        print(f"\nMinimax Results for {game_choice.replace('_', ' ').title()}:")
     print(f"Best Move: {best_move_minimax}")
     print(f"Nodes Explored: {node_counter_minimax['nodes']}")
     print(f"Time Taken: {time_minimax:.6f} seconds")
