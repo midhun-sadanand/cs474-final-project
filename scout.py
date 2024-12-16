@@ -2,6 +2,7 @@ from heuristic import evaluate
 from connectfour import ConnectFour, PLAYER1, PLAYER2
 from dotsandboxes import DotsAndBoxes
 from nim import Nim
+from minimax import apply_move, undo_move
 from transpositiontable import TranspositionTable, EXACT, LOWERBOUND, UPPERBOUND
 
 def scout(game, depth, game_size, alpha, beta, maximizingPlayer, node_counter, tt):
@@ -60,14 +61,9 @@ def scout(game, depth, game_size, alpha, beta, maximizingPlayer, node_counter, t
         for move in valid_moves:
 
             # apply move
-            if isinstance(game, ConnectFour):
-                game.make_move(move, PLAYER1)
-            elif isinstance(game, Nim):
-                heap_index, remove_count = move
-                game.make_move(heap_index, remove_count)
-            elif isinstance(game, DotsAndBoxes):
-                game.set_current_player(PLAYER1)
-                game.make_move(move)
+            if hasattr(game, 'set_current_player'):
+                game.set_current_player(PLAYER1 if maximizingPlayer else PLAYER2)
+            apply_move(game, move, maximizingPlayer)
 
             if first_move:
                 # full (initial) search for the first move
@@ -76,14 +72,7 @@ def scout(game, depth, game_size, alpha, beta, maximizingPlayer, node_counter, t
                 full_best_move, score = scout(game, depth - 1, game_size, alpha, beta, False, node_counter, tt)
 
                 # undo move
-                if isinstance(game, ConnectFour):
-                    game.undo_move(move)
-                elif isinstance(game, Nim):
-                    heap_index, remove_count = move
-                    game.undo_move(heap_index, remove_count)
-                elif isinstance(game, DotsAndBoxes):
-                    game.set_current_player(PLAYER1)
-                    game.undo_move(move)
+                undo_move(game, move, maximizingPlayer)
 
                 baseline_value = score
                 best_move = move
@@ -101,39 +90,20 @@ def scout(game, depth, game_size, alpha, beta, maximizingPlayer, node_counter, t
                 _, verify_score = scout(game, depth - 1, game_size, verify_alpha, verify_beta, False, node_counter, None)
 
                 # undo move
-                if isinstance(game, ConnectFour):
-                    game.undo_move(move)
-                elif isinstance(game, Nim):
-                    heap_index, remove_count = move
-                    game.undo_move(heap_index, remove_count)
-                elif isinstance(game, DotsAndBoxes):
-                    game.set_current_player(PLAYER1)
-                    game.undo_move(move)
+                undo_move(game, move, maximizingPlayer)
 
                 # if verify suggests equal or better move, re-search fully with original window
                 if verify_score >= baseline_value:
                     # re-apply move
-                    if isinstance(game, ConnectFour):
-                        game.make_move(move, PLAYER1)
-                    elif isinstance(game, Nim):
-                        heap_index, remove_count = move
-                        game.make_move(heap_index, remove_count)
-                    elif isinstance(game, DotsAndBoxes):
-                        game.set_current_player(PLAYER1)
-                        game.make_move(move)
+                    if hasattr(game, 'set_current_player'):
+                        game.set_current_player(PLAYER1 if maximizingPlayer else PLAYER2)
+                    apply_move(game, move, maximizingPlayer)
 
                     # recurse
                     _, full_score = scout(game, depth - 1, game_size, alpha, beta, False, node_counter, tt)
 
                     # undo again
-                    if isinstance(game, ConnectFour):
-                        game.undo_move(move)
-                    elif isinstance(game, Nim):
-                        heap_index, remove_count = move
-                        game.undo_move(heap_index, remove_count)
-                    elif isinstance(game, DotsAndBoxes):
-                        game.set_current_player(PLAYER1)
-                        game.undo_move(move)
+                    undo_move(game, move, maximizingPlayer)
 
                     if full_score > baseline_value:
                         baseline_value = full_score
@@ -153,14 +123,9 @@ def scout(game, depth, game_size, alpha, beta, maximizingPlayer, node_counter, t
 
         for move in valid_moves:
             # apply move
-            if isinstance(game, ConnectFour):
-                game.make_move(move, PLAYER2)
-            elif isinstance(game, Nim):
-                heap_index, remove_count = move
-                game.make_move(heap_index, remove_count)
-            elif isinstance(game, DotsAndBoxes):
-                game.set_current_player(PLAYER2)
-                game.make_move(move)
+            if hasattr(game, 'set_current_player'):
+                game.set_current_player(PLAYER1 if maximizingPlayer else PLAYER2)
+            apply_move(game, move, maximizingPlayer)
 
             if first_move:
                 # full (initial) search for the first move
@@ -169,14 +134,7 @@ def scout(game, depth, game_size, alpha, beta, maximizingPlayer, node_counter, t
                 full_best_move, score = scout(game, depth - 1, game_size, alpha, beta, True, node_counter, tt)
 
                 # undo move
-                if isinstance(game, ConnectFour):
-                    game.undo_move(move)
-                elif isinstance(game, Nim):
-                    heap_index, remove_count = move
-                    game.undo_move(heap_index, remove_count)
-                elif isinstance(game, DotsAndBoxes):
-                    game.set_current_player(PLAYER2)
-                    game.undo_move(move)
+                undo_move(game, move, maximizingPlayer)
 
                 baseline_value = score
                 best_move = move
@@ -194,40 +152,21 @@ def scout(game, depth, game_size, alpha, beta, maximizingPlayer, node_counter, t
                 _, verify_score = scout(game, depth - 1, game_size, verify_alpha, verify_beta, True, node_counter, None)
 
                 # undo move
-                if isinstance(game, ConnectFour):
-                    game.undo_move(move)
-                elif isinstance(game, Nim):
-                    heap_index, remove_count = move
-                    game.undo_move(heap_index, remove_count)
-                elif isinstance(game, DotsAndBoxes):
-                    game.set_current_player(PLAYER2)
-                    game.undo_move(move)
+                undo_move(game, move, maximizingPlayer)
 
                 # re-search fully if verify says there might be a better move in this branch than the one we found
                 if verify_score <= baseline_value:
 
                     # apply move
-                    if isinstance(game, ConnectFour):
-                        game.make_move(move, PLAYER2)
-                    elif isinstance(game, Nim):
-                        heap_index, remove_count = move
-                        game.make_move(heap_index, remove_count)
-                    elif isinstance(game, DotsAndBoxes):
-                        game.set_current_player(PLAYER2)
-                        game.make_move(move)
+                    if hasattr(game, 'set_current_player'):
+                        game.set_current_player(PLAYER1 if maximizingPlayer else PLAYER2)
+                    apply_move(game, move, maximizingPlayer)
 
                     # recurse
                     _, full_score = scout(game, depth - 1, game_size, alpha, beta, True, node_counter, tt)
 
                     # undo again
-                    if isinstance(game, ConnectFour):
-                        game.undo_move(move)
-                    elif isinstance(game, Nim):
-                        heap_index, remove_count = move
-                        game.undo_move(heap_index, remove_count)
-                    elif isinstance(game, DotsAndBoxes):
-                        game.set_current_player(PLAYER2)
-                        game.undo_move(move)
+                    undo_move(game, move, maximizingPlayer)
 
                     # update if new value creates tighter constraint
                     if full_score < baseline_value:

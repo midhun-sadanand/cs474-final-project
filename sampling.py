@@ -3,6 +3,7 @@ from connectfour import ConnectFour, PLAYER1, PLAYER2
 from dotsandboxes import DotsAndBoxes
 from nim import Nim
 from transpositiontable import TranspositionTable, EXACT
+from minimax import apply_move, undo_move
 import random
 
 def minimax_sample(game, depth, game_size, maximizingPlayer, node_counter, sample_size=None):
@@ -70,21 +71,3 @@ def minimax_sample(game, depth, game_size, maximizingPlayer, node_counter, sampl
                 best_move = move
 
         return best_move, value
-
-def apply_move(game, move, maximizingPlayer):
-    if isinstance(game, ConnectFour):
-        game.make_move(move, PLAYER1 if maximizingPlayer else PLAYER2)
-    elif isinstance(game, Nim):
-        heap_index, remove_count = move
-        game.make_move(heap_index, remove_count)
-    elif isinstance(game, DotsAndBoxes):
-        game.make_move(move)
-
-def undo_move(game, move, maximizingPlayer):
-    if isinstance(game, ConnectFour):
-        game.undo_move(move)
-    elif isinstance(game, Nim):
-        heap_index, remove_count = move
-        game.undo_move(heap_index, remove_count)
-    elif isinstance(game, DotsAndBoxes):
-        game.undo_move(move)

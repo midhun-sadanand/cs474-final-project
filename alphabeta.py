@@ -2,6 +2,7 @@ from heuristic import evaluate
 from connectfour import ConnectFour, PLAYER1, PLAYER2
 from dotsandboxes import DotsAndBoxes
 from nim import Nim
+from minimax import apply_move, undo_move
 from transpositiontable import TranspositionTable, EXACT, LOWERBOUND, UPPERBOUND
 
 def alphabeta(game, depth, game_size, alpha, beta, maximizingPlayer, node_counter, tt):
@@ -43,27 +44,15 @@ def alphabeta(game, depth, game_size, alpha, beta, maximizingPlayer, node_counte
         for move in valid_moves:
             
             # apply move
-            if isinstance(game, ConnectFour):
-                game.make_move(move, PLAYER1)
-            elif isinstance(game, Nim):
-                heap_index, remove_count = move
-                game.make_move(heap_index, remove_count)
-            elif isinstance(game, DotsAndBoxes):
-                game.set_current_player(PLAYER1)
-                game.make_move(move)
+            if hasattr(game, 'set_current_player'):
+                game.set_current_player(PLAYER1 if maximizingPlayer else PLAYER2)
+            apply_move(game, move, maximizingPlayer)
 
             # recurse
             _, new_score = alphabeta(game, depth - 1, game_size, alpha, beta, False, node_counter, tt)
 
             # undo move
-            if isinstance(game, ConnectFour):
-                game.undo_move(move)
-            elif isinstance(game, Nim):
-                heap_index, remove_count = move
-                game.undo_move(heap_index, remove_count)
-            elif isinstance(game, DotsAndBoxes):
-                game.set_current_player(PLAYER1)
-                game.undo_move(move)
+            undo_move(game, move, maximizingPlayer)
 
             if new_score > value:
                 value = new_score
@@ -91,27 +80,15 @@ def alphabeta(game, depth, game_size, alpha, beta, maximizingPlayer, node_counte
 
         for move in valid_moves:
             # apply move
-            if isinstance(game, ConnectFour):
-                game.make_move(move, PLAYER2)
-            elif isinstance(game, Nim):
-                heap_index, remove_count = move
-                game.make_move(heap_index, remove_count)
-            elif isinstance(game, DotsAndBoxes):
-                game.set_current_player(PLAYER2)
-                game.make_move(move)
+            if hasattr(game, 'set_current_player'):
+                game.set_current_player(PLAYER1 if maximizingPlayer else PLAYER2)
+            apply_move(game, move, maximizingPlayer)
 
             # recurse
             _, new_score = alphabeta(game, depth - 1, game_size, alpha, beta, True, node_counter, tt)
 
             # undo move
-            if isinstance(game, ConnectFour):
-                game.undo_move(move)
-            elif isinstance(game, Nim):
-                heap_index, remove_count = move
-                game.undo_move(heap_index, remove_count)
-            elif isinstance(game, DotsAndBoxes):
-                game.set_current_player(PLAYER2)
-                game.undo_move(move)
+            undo_move(game, move, maximizingPlayer)
 
             if new_score < value:
                 value = new_score
