@@ -52,9 +52,24 @@ def main():
         sys.exit(1)
 
     game_choice = sys.argv[1].lower().replace('_', '')
+    if(game_choice not in ['connectfour', 'nim', 'dotsandboxes']):
+        print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [small/medium/large] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
+        sys.exit(1)
+
     game_size = sys.argv[2]
+    if(game_size not in ['small', 'medium', 'large']):
+        print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [small/medium/large] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
+        sys.exit(1)
+
     state = sys.argv[3]
+    if(state not in ['initial', 'random']):
+        print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [small/medium/large] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
+        sys.exit(1)
+
     agent = sys.argv[4]
+    if(agent not in ['cmp1', 'cmp2', 'cmp3', 'cmp4', 'cmp5']):
+        print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
+        sys.exit(1)
 
     if(agent in ['cmp3', 'cmp4', 'cmp5']):
         has_tt = True
@@ -66,18 +81,12 @@ def main():
             game = ConnectFour(True, game_size)
         elif (state == 'random'):
             game = ConnectFour(False, game_size)
-        else:
-            print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [small/medium/large] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
-            sys.exit(1)
         MAX_DEPTH = 4
     elif game_choice == 'nim':
         if(state == 'initial'):
             game = Nim(True, game_size)
         elif (state == 'random'):
             game = Nim(False, game_size)
-        else:
-            print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [small/medium/large] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
-            sys.exit(1)
         MAX_DEPTH = 10
     elif game_choice == 'dotsandboxes':
         if(state == 'initial'):
@@ -86,16 +95,6 @@ def main():
         elif (state == 'random'):
             game = DotsAndBoxes(False, game_size)
             MAX_DEPTH = 6
-        else:
-            print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [small/medium/large] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
-            sys.exit(1)
-    else:
-        print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [small/medium/large] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
-        sys.exit(1)
-
-    if(agent not in ['cmp1', 'cmp2', 'cmp3', 'cmp4', 'cmp5']):
-        print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
-        sys.exit(1)
 
     game.display_board()
 
