@@ -142,11 +142,6 @@ def main():
         end_time_agent = time.time()
         time_agent = end_time_agent - start_time_agent
 
-    # not valid comparison
-    else:
-        print("Usage: ./FinalProj [connectfour|nim|dotsandboxes] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]")
-        sys.exit(1)
-
     # metrics
     if(game_choice == 'dotsandboxes' and game_size == 'large'):
         print(f"\nMinimax Sampling Results for {game_choice.replace('_', ' ').title()}:")
