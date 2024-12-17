@@ -9,6 +9,8 @@ python main.py "$@"
 # How to Run the Test Script
 #     1. run "make" in terminal
 #     2. Usage: ./FinalProj [connectfour|nim|dotsandboxes] [small/medium/large] [initial/random] [cmp1/cmp2/cmp3/cmp4/cmp5]
+#
+#     PS. The only two tests that take longer than the rest (~20-40 seconds) are the large state spaces of nim and dotsandboxes.
 
 # Brief Description of Final Project
 #     Our final project compares the performance of a minimax algorithm using 5 different comparison agents, which are combinations of
