@@ -41,4 +41,27 @@ Research Question
 
 Results
 
-    todo:
+    1. ALPHA-BETA PRUNING
+
+    Cmp4 (Alpha-Beta Pruning + Transposition Tables) performs the best overall by cutting off
+    unnecessary searches and reusing cached results, making it the most efficient option.
+    As the games get larger, combining Alpha-Beta Pruning with Transposition Tables becomes essential for 
+    keeping the computation time manageable and showing clear improvements over basic Minimax.
+
+    On its own, Cmp1 (Alpha-Beta Pruning) does better than basic Minimax by skipping irrelevant branches but still falls 
+    behind methods that use caching, especially in bigger games. 
+
+
+    2. MINIMAX + TRANSPOSITION
+
+    Cmp3 (Minimax + Transposition Tables) greatly improves both the number of nodes explored and the time taken by saving and 
+    reusing previously evaluated game states. These benefits become even more noticeable as the games get more complex. 
+     
+    
+    3. SCOUT
+     
+    Cmp2 (SCOUT) struggles because it needs to redundantly check moves to ensure the optimal output, 
+    adding extra work and decreasing efficiency in smaller or medium sized games.
+     
+    Cmp5 tries to fix SCOUT's problems by adding Transposition Tables, but it still isn't as fast or efficient as
+    Cmp3 and Cmp4 due to SCOUT's re-checking process. 
